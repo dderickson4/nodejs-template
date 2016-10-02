@@ -1,0 +1,243 @@
+
+<style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; }
+  </style>
+  <script>
+  $(function() {
+    /*
+    $.getJSON("/family", function(data) {                           
+          //create array for response objects  
+          var suggestions = [];  
+                    
+          //process response  
+          $.each(data, function(i, val){ 
+            var json = {};
+            json.name = val.name;
+            json.id = val.ID; 
+            console.log(json);                              
+            suggestions.push(json);  
+          });  
+      });
+    */
+    log = function (msg)
+    {
+      console.log(msg);
+    }
+    $( "#city" ).autocomplete({
+      source: function( request, response ) {
+        $.ajax({
+          url: "/family/" + request.term,
+          success: function( data ) {
+            response( data, function( item ) {
+              return {
+                label: item.name,
+                value: item.ID
+              }
+            });
+          }
+        });
+      },
+      minLength: 2,
+      select: function( event, ui ) {
+        log( ui.item ?
+          "Selected: " + ui.item.label + " " + ui.item.value :
+          "Nothing selected, input was " + this.value);
+      },
+      open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+      },
+      close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+      }
+    });
+
+    var headerNames2 = [];
+    headerNames2['user_email'] = "Email 2";
+    headerNames2['user_name'] = "Name 3";
+    new EISTable('testDataTable','user_name',headerNames2).displayTable('testDataTable','org','users','user_name','desc','list', headerNames2);
+
+
+  });
+  </script>
+
+  <script>
+  $(function() {
+    $( "#datepicker" ).datepicker();
+  });
+  </script>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="#"><%= title %></a>
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+      <div class="content">
+        <form class="form-horizontal" method='post' action='/form'>
+          <fieldset>
+            <legend>Login</legend>
+            <div class="control-group">
+              <label class="control-label" for="input01">Username</label>
+              <div class="controls">
+                <input type="text" class="input-xlarge" id="user_name" name="user_name" rel="popover" data-content="Enter your username." data-original-title="Full Name">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="input01">Password</label>
+              <div class="controls">
+                <input type="password" id="password" name="password" class="input-xlarge">
+              </div>
+            </div>
+             <div class="control-group">
+              <label class="control-label" for="input01">Date</label>
+              <div class="controls">
+                <input name="datepicker" type="text" id="datepicker" />
+              </div>
+            </div>
+
+             <div class="control-group">
+              <label class="control-label" for="input01">AutoComplete</label>
+              <div class="controls">
+                <input id="city" type="text" name="city" />
+              </div>
+            </div>
+
+
+            <div class="control-group">
+              <label class="control-label" for="input01"></label>
+              <div class="controls">
+                <button id="signup" class="btn btn-success" rel="tooltip" title="first tooltip">Login</button>
+                - or -
+                <a href="/Register" class="btn btn-primary">Sign-up</a>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+
+        <table id="testDataTable" class="table table-striped table-bordered">
+        </table>
+
+ <table class="table table-striped table-bordered table-condensed">
+    <thead>
+        <tr>
+            <th><a href="javascript:sortTable('#','asc');">#</a></th>
+            <th><a href="javascript:sortTable('firstname','asc');">First Name</a></th>
+            <th><a href="javascript:sortTable('lastname','asc');">Last Name</a></th>
+            <th><a href="javascript:sortTable('language','asc');">Language</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>Some</td>
+            <td>One</td>
+            <td>English</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Joe</td>
+            <td>Sixpack</td>
+            <td>English</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Some</td>
+            <td>One</td>
+            <td>English</td>
+        </tr>
+    </tbody>
+</table>
+
+<ul id="sortable">
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 3</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 4</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 5</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
+</ul>
+
+</div> <!-- /container -->
+
+
+<!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/plugins/jquery-popover/jquery.cf.popover.min.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/validate.js"></script>
+    
+
+
+      <!-- Add mousewheel plugin (this is optional) -->
+      <!--
+      <script type="text/javascript" src="/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+      -->
+    <!-- Add fancyBox main JS and CSS files -->
+    <script type="text/javascript" src="/js/jquery.browser.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
+    <script type="text/javascript" src="/js/fancybox/jquery.fancybox.js?v=2.1.5"></script>
+  
+    <script type="text/javascript">
+      $(document).ready(function() {   
+        $('.fancybox').fancybox();
+        $(":input").bind('keypress', function(e){
+          var id = $(this).attr('id');
+          var code = (e.keyCode ? e.keyCode : e.which);
+           if(code == 13) { //Enter keycode
+             //Do something
+             console.log('enter key' + id);
+             var form_json = $("form:first").serializeArray();
+             var bFound = false;
+             for (var i=0; i < form_json.length; i++)
+             {
+              var objJson = form_json[i];
+              if (bFound)
+              {
+                console.log(objJson);
+                document.getElementById(objJson.name).focus();
+                break;
+              }
+              if (objJson.name == id)
+              {
+                console.log(objJson);
+                // get next values...
+                bFound = true;
+              }
+             }
+             form_json.currentid = id;
+             event.preventDefault();
+             return false;
+           }
+        })
+      });
+    </script>
+
+
+
+
+
+
+

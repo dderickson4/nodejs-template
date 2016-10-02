@@ -1,0 +1,84 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/node/0.10.2/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   'git-scm' ]
+2 info using npm@1.2.15
+3 info using node@v0.10.2
+4 verbose read json /projects/node-express-twitter-bootstrap-master/package.json
+5 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/angular/package.json
+6 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/asEvented/package.json
+7 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/async/package.json
+8 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/bcrypt/package.json
+9 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/connect-redis/package.json
+10 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/ejs/package.json
+11 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/ejs-locals/package.json
+12 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/express/package.json
+13 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/hiredis/package.json
+14 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/hiredis alias/package.json
+15 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/mysql/package.json
+16 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/node-uuid/package.json
+17 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/nvm/package.json
+18 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/redis/package.json
+19 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/redis-node/package.json
+20 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/socket.io/package.json
+21 verbose read json /projects/node-express-twitter-bootstrap-master/node_modules/socket.io-client/package.json
+22 verbose from cache /projects/node-express-twitter-bootstrap-master/package.json
+23 verbose readDependencies using package.json deps
+24 verbose cache add [ 'git-scm', null ]
+25 verbose cache add name=undefined spec="git-scm" args=["git-scm",null]
+26 verbose parsed url { protocol: null,
+26 verbose parsed url   slashes: null,
+26 verbose parsed url   auth: null,
+26 verbose parsed url   host: null,
+26 verbose parsed url   port: null,
+26 verbose parsed url   hostname: null,
+26 verbose parsed url   hash: null,
+26 verbose parsed url   search: null,
+26 verbose parsed url   query: null,
+26 verbose parsed url   pathname: 'git-scm',
+26 verbose parsed url   path: 'git-scm',
+26 verbose parsed url   href: 'git-scm' }
+27 silly lockFile d73b6255-git-scm git-scm
+28 verbose lock git-scm /Users/david/.npm/d73b6255-git-scm.lock
+29 silly lockFile d73b6255-git-scm git-scm
+30 silly lockFile d73b6255-git-scm git-scm
+31 verbose addNamed [ 'git-scm', '' ]
+32 verbose addNamed [ null, '' ]
+33 silly lockFile 5d3e391b-git-scm git-scm@
+34 verbose lock git-scm@ /Users/david/.npm/5d3e391b-git-scm.lock
+35 silly addNameRange { name: 'git-scm', range: '', hasData: false }
+36 verbose url raw git-scm
+37 verbose url resolving [ 'https://registry.npmjs.org/', './git-scm' ]
+38 verbose url resolved https://registry.npmjs.org/git-scm
+39 info trying registry request attempt 1 at 14:47:15
+40 http GET https://registry.npmjs.org/git-scm
+41 http 404 https://registry.npmjs.org/git-scm
+42 silly registry.get cb [ 404,
+42 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+42 silly registry.get     'content-type': 'application/json',
+42 silly registry.get     'cache-control': 'max-age=0',
+42 silly registry.get     'content-length': '51',
+42 silly registry.get     'accept-ranges': 'bytes',
+42 silly registry.get     date: 'Wed, 10 Jun 2015 21:47:17 GMT',
+42 silly registry.get     via: '1.1 varnish',
+42 silly registry.get     age: '0',
+42 silly registry.get     connection: 'keep-alive',
+42 silly registry.get     'x-served-by': 'cache-sjc3120-SJC',
+42 silly registry.get     'x-cache': 'MISS',
+42 silly registry.get     'x-cache-hits': '0',
+42 silly registry.get     'x-timer': 'S1433972837.124035,VS0,VE161' } ]
+43 silly lockFile 5d3e391b-git-scm git-scm@
+44 silly lockFile 5d3e391b-git-scm git-scm@
+45 error 404 'git-scm' is not in the npm registry.
+45 error 404 You should bug the author to publish it
+45 error 404
+45 error 404 Note that you can also install from a
+45 error 404 tarball, folder, or http url, or git url.
+46 error System Darwin 14.3.0
+47 error command "/usr/local/Cellar/node/0.10.2/bin/node" "/usr/local/bin/npm" "install" "git-scm"
+48 error cwd /projects/node-express-twitter-bootstrap-master
+49 error node -v v0.10.2
+50 error npm -v 1.2.15
+51 error code E404
+52 verbose exit [ 1, true ]

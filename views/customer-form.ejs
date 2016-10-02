@@ -1,0 +1,111 @@
+
+
+        <form class="form-horizontal" method="post" action="/Customers">
+<fieldset>
+
+<!--
+<legend>Customers</legend>
+-->
+<script>
+  $(document).ready(function () {
+    $('#signup').click(function() {
+      $(this).parents('form:first').submit();
+    });
+    $("#reset").click(function() {
+        $(this).closest('form').find("input[type=text], textarea").val("");
+    });
+  })
+</script>
+<div class="control-group">
+  <label class="control-label" for="input01"></label>
+  <div class="controls">
+    <a id="btndelete" class="btn btn-danger" href="#" el="tooltip" title="Delete Record"><i class="icon-trash icon-white"></i> Delete</a>
+       - or -
+    <a id="signup" class="btn btn-primary" href="#" el="tooltip" title="Save Record"><i class="icon-save icon-white"></i> Create My Record</a>
+    <a id="reset" class="btn btn-primary" href="#" el="tooltip" title="Reset Form"><i class="icon-save icon-white"></i> Reset Form</a>       
+  </div>
+</div>
+
+<div class="control-group" style="display:none;">
+<label class="control-label" for="input01">id</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="id" name="id" rel="popover" data-content="Enter your id." data-original-title="id">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">CustomerID</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="CustomerID" name="CustomerID" rel="popover" data-content="Enter your CustomerID." data-original-title="CustomerID">
+</div>
+
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">CompanyName</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="CompanyName" name="CompanyName" rel="popover" data-content="Enter your CompanyName." data-original-title="CompanyName">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">ContactName</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="ContactName" name="ContactName" rel="popover" data-content="Enter your ContactName." data-original-title="ContactName">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">ContactTitle</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="ContactTitle" name="ContactTitle" rel="popover" data-content="Enter your ContactTitle." data-original-title="ContactTitle">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">Address</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="Address" name="Address" rel="popover" data-content="Enter your Address." data-original-title="Address">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">City</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="City" name="City" rel="popover" data-content="Enter your City." data-original-title="City">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">Region</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="Region" name="Region" rel="popover" data-content="Enter your Region." data-original-title="Region">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">PostalCode</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="PostalCode" name="PostalCode" rel="popover" data-content="Enter your PostalCode." data-original-title="PostalCode">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">Country</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="Country" name="Country" rel="popover" data-content="Enter your Country." data-original-title="Country">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">Phone</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="Phone" name="Phone" rel="popover" data-content="Enter your Phone." data-original-title="Phone">
+</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="input01">Fax</label>
+<div class="controls">
+<input type="text" class="input-xlarge" id="Fax" name="Fax" rel="popover" data-content="Enter your Fax." data-original-title="Fax">
+</div>
+</div>
+
+
+
+
+</fieldset>
+</form>
+
+<div class="control-group">
+   
+</div>

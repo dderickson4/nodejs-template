@@ -1,0 +1,121 @@
+
+<style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; }
+  </style>
+  <script>
+  $(function() {
+    //$( "#sortable" ).sortable();
+    //$( "#sortable" ).disableSelection();
+    
+  });
+  </script>
+
+  <script>
+
+function FocusElement (id)
+{
+  $('#' + id).focus();
+}
+
+
+$( document ).ready(function() {
+    
+  
+});
+
+
+  </script>
+
+
+
+<div class="container">
+      <div id="errorWrapper">
+          <%-error%> 
+      </div>
+
+      
+
+      <div class="content">
+        <form class="form-horizontal" id="login" method='post' action='/login'>
+          <fieldset>
+            <legend>Login</legend>
+            <div class="control-group">
+              <label class="control-label" for="user_name">Username</label>
+              <div class="controls">
+                <input type="text" class="form-control" id="user_name" name="user_name" rel="popover" data-content="Enter your username." data-original-title="Full Name" value="<%=data.user_email%>">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="password">Password</label>
+              <div class="controls">
+                <input type="password" id="password" name="password" class="form-control">
+              </div>
+            </div>
+
+            <div class="control-group">
+                </br>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+              <div class="">
+
+                    <button id="signup" class="btn btn-success" rel="tooltip" title="first tooltip">Login</button>
+                    <label class="control-label" for="password">- or -</label>
+                    <a href="/Register" class="btn btn-primary">Sign-up</a>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+</div> <!-- /container -->
+
+<%-js%>
+
+
+<!-- Add jQuery library -->
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <script src="js/plugins/jquery-popover/jquery.cf.popover.min.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/validate.js"></script>
+    
+
+
+      <!-- Add mousewheel plugin (this is optional) -->
+      <!--
+      <script type="text/javascript" src="/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+      -->
+    <!-- Add fancyBox main JS and CSS files -->
+    <script type="text/javascript" src="/js/jquery.browser.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
+    <script type="text/javascript" src="/js/fancybox/jquery.fancybox.js?v=2.1.5"></script>
+  
+    <script type="text/javascript">
+      $(document).ready(function() {   
+        $('.fancybox').fancybox();
+        $(":input").bind('keypress', function(e){
+          var id = $(this).attr('id');
+          console.log(id);
+          var code = (e.keyCode ? e.keyCode : e.which);
+           if(code == 13) { //Enter keycode
+             //Do something
+             console.log('enter key' + id);
+             var form_json = $("form:first").serializeArray();
+             form_json.currentid = id;
+             console.log(form_json);
+           }
+        })
+      });
+    </script>
+
+
+

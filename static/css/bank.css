@@ -1,0 +1,43 @@
+/* Override some of bootstrap's defaults */
+
+html, body {
+  background: url(/images/broken_noise.png);
+  color: #333;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+body {
+	padding-top: 40px;
+}
+.container {
+	width: 500px;
+}
+
+/* The white background content wrapper */
+.container > .content {
+  background: url(/images/ricepaper2.png);
+	padding: 20px;
+	margin: 0 -20px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+	box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+legend {
+	text-align: center;
+	margin-bottom: 0px;
+	font-weight: bold;
+	-moz-border-bottom-colors: #000000;
+}
+
+.alert-info {
+	width: 450px;
+	text-align: center;
+}
+.alert-info a {
+	font-weight: bold;
+}

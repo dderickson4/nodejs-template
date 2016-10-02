@@ -1,0 +1,256 @@
+
+<style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; }
+
+tr 
+{
+  cursor:hand;
+  cursor:pointer;
+}
+
+
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+  background-color: transparent;
+}
+
+  </style>
+
+  <script>
+
+function tableready (id) {
+
+  console.log ('table ready' + id);
+   var handler = function() {          
+      var url = 'lookup/org/customer/' + $(this).attr('id');
+      console.log (url);
+      $("#signup").closest('form').find("input[type=text], textarea").val("");
+      $.ajax({
+        url: url,
+        type: 'get',
+        dataType: 'json',
+        success: function(json) {
+          console.log(json);
+
+          if (json.id == undefined)
+          {
+            $("#signup").html('<i class="icon-save icon-white"></i> Create My Record');
+          } else {
+            $("#signup").html('<i class="icon-save icon-white"></i> Update My Record');
+          }
+          for(var key in json) {
+            updateElement(key, json[key]);
+             
+          }
+
+        } 
+      }); 
+  };
+    $("tr").each (function() {
+      //$(this).removeClass('fancybox fancybox.iframe');
+      //$(this).addClass('fancybox fancybox.iframe');
+      $(this).attr('href', '#formWrapper');
+      $(this).unbind ('click' , handler);
+      $(this).bind ('click' , handler);
+/*
+      $(this).fancybox({
+              'onStart': function() { $("#formWrapper").css("display","block"); },            
+              'onClosed': function() { $("#formWrapper").css("display","none"); },
+              'width': 550,
+              'height': 'auto',
+              'autoDimensions': false,
+              'autoSize': false
+          });
+*/
+  });
+
+}
+
+  $(function() {
+    $("#btndelete").bind('click', function () {
+      var id = document.getElementById('id').value;
+      console.log('clicked ' + id);
+      var url = '/org/customer/delete/' + id;
+      $.ajax({
+          url: url,
+          type: 'get',
+          dataType: 'json',
+          success: function(json) {
+            location.reload();
+          }
+        });
+    });
+    
+    /*
+    $.getJSON("/family", function(data) {                           
+          //create array for response objects  
+          var suggestions = [];  
+                    
+          //process response  
+          $.each(data, function(i, val){ 
+            var json = {};
+            json.name = val.name;
+            json.id = val.ID; 
+            console.log(json);                              
+            suggestions.push(json);  
+          });  
+      });
+    */
+    log = function (msg)
+    {
+      console.log(msg);
+    }
+    $( "#city" ).autocomplete({
+      source: function( request, response ) {
+        $.ajax({
+          url: "/family/" + request.term,
+          success: function( data ) {
+            response( data, function( item ) {
+              return {
+                label: item.name,
+                value: item.ID
+              }
+            });
+          }
+        });
+      },
+      minLength: 2,
+      select: function( event, ui ) {
+        log( ui.item ?
+          "Selected: " + ui.item.label + " " + ui.item.value :
+          "Nothing selected, input was " + this.value);
+      },
+      open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+      },
+      close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+      }
+    });
+
+    var headerNames = [];
+    headerNames['CompanyName'] = "Company Name";
+    headerNames['ContactName'] = "Name";
+    headerNames['ContactTitle'] = "Title";
+    headerNames['PostalCode'] = "Postal Code";
+    var t = new EISTable('testDataTable','ContactName',headerNames);
+
+    var arrHidden = [];
+    arrHidden.push('id');
+    arrHidden.push('CustomerID');
+
+    t.SetColumnsHidden(arrHidden);
+    t.displayTable('testDataTable','org','customer','CompanyName','desc','list', headerNames);
+
+
+  });
+  </script>
+
+  
+  <script>
+  $(function() {
+    $( "#datepicker" ).datepicker();
+  });
+
+
+  $(document).ready(function () {
+    $("#formWrapper").hide();
+  });
+</script>
+
+
+<div id="main" role="main" class="container">
+  <div id="errorWrapper" style="display:none;">
+    <%-error%> 
+  </div>
+  <div class="content">
+      
+          <div id="formWrapper" style="display:none;">
+            <%- partial('customer-form') %>
+          </div>
+
+
+
+          <table id="testDataTable" class="table table-striped table-bordered">
+          </table>
+          <a href="#formWrapper" id="btnAddNew">Add New Record</a>
+        
+
+  </div> <!-- content -->
+</div> <!-- /container -->
+
+
+<!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+      <%-js%> 
+
+<script>
+  //$("#alert").show();
+</script>
+      <!-- Add mousewheel plugin (this is optional) -->
+      <!--
+      <script type="text/javascript" src="/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+      -->
+    <!-- Add fancyBox main JS and CSS files -->
+    <!-- http://localhost:5000/org/customer/CompanyName/asc/list -->
+    <script type="text/javascript">
+      $(document).ready(function() { 
+
+
+        $("#btnAddNew").fancybox({
+              'onStart': function() { $("#formWrapper").css("display","block"); },            
+              'onClosed': function() { $("#formWrapper").css("display","none"); },
+              'width': 550,
+              'height': 'auto',
+              'autoDimensions': false,
+              'autoSize': false
+          });
+        $(":input").bind('keypress', function(e){
+          var id = $(this).attr('id');
+          var code = (e.keyCode ? e.keyCode : e.which);
+           if(code == 13) { //Enter keycode
+              //Do something
+              var form_json = $("form:first").serializeArray();
+              console.log(id);
+              console.log(form_json);
+              var bFound = false;
+              for (var i=0; i < form_json.length; i++)
+              {
+                var objJson = form_json[i];
+                if (bFound)
+                {
+                  document.getElementById(objJson.name).focus();
+                  break;
+                }
+                if (objJson.name == id)
+                {
+                  console.log(objJson);
+                  // get next values...
+                  bFound = true;
+                }
+             }
+             form_json.currentid = id;
+             event.preventDefault();
+             return false;
+           }
+        })
+      });
+    </script>
+
+ 
+
+
+   
+
+
+
+
+
+
+
+
+

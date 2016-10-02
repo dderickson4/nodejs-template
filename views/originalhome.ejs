@@ -1,0 +1,428 @@
+
+<head>
+<style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; }
+  </style>
+
+<style>
+#messages { list-style-type: none; margin: 0; padding: 0; }
+#messages li { padding: 5px 10px; }
+#messages li:nth-child(odd) { background: #eee; }
+</style>
+
+
+<script>
+    var myAngApp = angular.module('SharePointAngApp', []);
+    myAngApp.controller('spCustomerController', function ($scope, $http) {
+        $http({
+            method: 'GET',
+            url: "/org/user/user_email/asc/list",
+            headers: { "Accept": "application/json;odata=verbose" }
+        }).success(function (data, status, headers, config) {
+            $scope.customers = data.data;
+        }).error(function (data, status, headers, config) {
+
+        });
+    });
+</script>
+
+
+
+
+  <script>
+  $(function() {
+    $( "#sortable" ).sortable();
+    $( "#sortable" ).disableSelection();
+  });
+  </script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+function sortTable (column, direction)
+{
+  console.log ('sorting ' + column + ' - ' + direction); 
+}
+</script>
+
+<script>
+function log (type, msg)
+{
+    console.log(type + ": " + msg);
+}
+
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+</script>
+
+<script>
+// Create SocketIO instance, connect
+var socket = io();
+
+socket.on('announcement', function (data) {
+  	//log ("announcement", JSON.stringify(data));
+
+    if (data.message == undefined)
+    {
+        $('#messages').append($('<li>').text(JSON.stringify(data.msg)));
+    } else {
+  	    $('#messages').append($('<li>').text(data.clientid + ' said ' + data.message.msg + ' at ' + data.DateCreated));
+  	}
+});
+
+socket.on('message', function (data) {
+
+        log (JSON.stringify(data));
+        if (data.message.msg.length > 0)
+        {
+            $('#messages').append($('<li>').text(data.message.msg));
+        }
+  		socket.emit ('messageReceipt', data.id);
+});
+
+socket.on('broadcastmessage', function (data) {
+    log("***" + JSON.stringify(data.message.msg));
+    switch (data.message.action)
+    {
+        case "update":
+            console.log("+++++++++++" + JSON.stringify(data.message));
+            var element = $("#" + data.message.formid);
+
+            console.log(data.message.formid + ":" + data.message.formvalue + ":" + element.attr('type'));
+            var type = element.attr('type'); //"input";
+            //document.getElementById('' + data.message.formid).type;
+
+/*
+            if (element.attr('type') == "radio")
+            {
+                type = "radio";
+            }
+            if (element.is("checkbox") || element.attr('type') == "checkbox")
+            {
+                type = "checkbox";
+            }
+
+            if (element.is("select"))
+            {
+                type = "select";
+            }
+*/
+            console.log("######" + type);
+            switch (type)
+            {
+                case "input":
+                    element.val(data.message.formvalue);
+                    break;
+                case "checkbox":
+                    console.log(data.message.formvalue);
+                    element.prop("checked",data.message.formvalue);
+                    break;
+                case "select":
+                    element.val(data.message.formvalue);
+                    break;
+                case "radio":
+                    //element.val(data.message.formvalue);
+                    console.log()
+                    element.prop("checked",true);
+                    break;
+                default:
+                    element.val(data.message.formvalue);
+                    break;
+            }
+
+        default:
+            if (data.message.msg.length > 0)
+            {
+                $("#messages").append($("<li>").text(JSON.stringify(data.clientid + ' says ' + data.message.msg)));
+            }
+        break;
+    }
+});
+
+
+
+
+$(document).ready(function() {
+  $(":input").each(function() {
+    $(this).keyup(function() {
+        console.log( "Handler for " + $(this).attr("id") + ".keypress() called." + $(this).val() );
+        updateFormElement($(this).attr("id"),$(this).val());
+    });
+  });
+
+  $(":checkbox").each(function() {
+    $(this).change(function() {
+        console.log( "Handler for " + $(this).attr("id") + ".change() called." + $(this).is(":checked") );
+        updateFormElement($(this).attr("id"),$(this).is(":checked"));
+    });
+  });
+
+  $(":radio").each(function() {
+    $(this).change(function() {
+        console.log( "Handler for " + $(this).attr("id") + ".change() called." + $(this).is(":checked") );
+        console.log($(this));
+        updateFormElement($(this).attr("id"),$(this).val());
+    });
+  });
+
+/*
+  $(":select").each(function() {
+    $(this).change(function() {
+        console.log("select change function called");
+    });
+  });
+*/
+/*
+  $(":select").each(function() {
+    $(this).change(function() {
+        console.log( "Handler for " + $(this).attr("id") + ".change() called." + $(this).is(":checked") );
+        console.log($(this));
+        updateFormElement($(this).attr("id"),$(this).val());
+    });
+  });
+*/
+
+});
+
+
+function updateFormElement (id, value) {
+    var msgJson = {};
+    var message = "";
+	msgJson.msg = message;
+	msgJson.action = "update";
+	msgJson.formid = id;
+	msgJson.formvalue = value;
+	socket.emit('message', msgJson);
+}
+
+// Sends a message to the server via sockets
+function sendMessageToServer(message) {
+	//socket.send(message);
+	console.log(message);
+	var msgJson = {};
+	msgJson.msg = message;
+	msgJson.action = "update";
+	socket.emit('message', msgJson);
+}
+
+
+
+// sendMessageToServer("test message");
+
+
+</script>
+</head>
+<body>
+<div>
+        <div class="navbar navbar-fixed-top">
+          <div class="navbar-inner">
+            <div class="container">
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+              <a class="brand" href="#"><%= title %></a>
+              <div class="nav-collapse">
+                <ul class="nav">
+                  <li class="active"><a href="#">Home</a></li>
+                  <li><a href="#about">About</a></li>
+                  <li><a href="#contact">Contact</a></li>
+                </ul>
+              </div><!--/.nav-collapse -->
+            </div>
+          </div>
+        </div>
+
+</div>
+
+
+<div class="container">
+
+    <div class="jumbotron">
+        <h1>Web Application Development</h1>
+        <p>Custom e-Commerce Website Application Packages</p>
+        <p><a class="btn btn-primary btn-lg">Learn more</a></p>
+    </div>
+
+
+
+    <ul id="messages" style="display:none;">
+
+    </ul>
+
+
+
+    <div class="well bs-component" >
+        <form class="form-horizontal">
+            <fieldset style="display:none;">
+                <legend>Legend</legend>
+                <div class="form-group">
+                    <label for="inputEmail" class="col-lg-2 control-label">Email</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" id="inputEmail" placeholder="Email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-lg-2 control-label">Password</label>
+                    <div class="col-lg-10">
+                        <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkBox" type="checkbox"> Checkbox
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="textArea" class="col-lg-2 control-label">Textarea</label>
+                    <div class="col-lg-10">
+                        <textarea class="form-control" rows="3" id="textArea"></textarea>
+                        <span class="help-block">A longer block of help text that breaks onto a new line and may extend beyond one line.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">Radios</label>
+                    <div class="col-lg-10">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+                                Option one is this
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                                Option two can be something else
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-lg-2 control-label">Selects</label>
+                    <div class="col-lg-10">
+                        <select class="form-control" id="select">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                        <br>
+                        <select multiple="" class="form-control">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button type="reset" class="btn btn-default">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        <div id="source-button" class="btn btn-primary btn-xs" style="display: none;">&lt; &gt;</div>
+
+    </div>
+
+
+
+
+    <div class="section" style="display:none;">
+
+        <div class="group">
+            <div class="comment">
+                <input id="comment" name="comment" class="comment" type="text" />
+                <br />
+            </div>
+            <div class="link">
+                <input id="link1" name="link1" class="link" type="text" />
+                <input id="link2" name="link2" class="link" type="text" />
+                <br />
+            </div>
+        </div>
+
+        <div class="group">
+            <div class="comment">
+                <input id="comment1" name="comment1" class="comment" type="text" />
+                <input id="comment2" name="comment2" class="comment" type="text" />
+                <br />
+            </div>
+            <div class="link">
+                <input id="link3" name="link3" class="link" type="text" />
+                <br />
+            </div>
+        </div>
+
+    </div>
+
+
+
+<div style="display:none;">
+
+
+    <h1> Angular JS SharePoint 2013 REST API !!</h1>
+    <input type="text" id="firstname" name="firstname"/>
+
+    <div ng-app="SharePointAngApp" class="row">
+        <div ng-controller="spCustomerController" class="span10">
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Company</th>
+
+                </tr>
+                <tr ng-repeat="customer in customers">
+                    <td>{{customer.user_name}}</td>
+                    <td>{{customer.user_email}}</td>
+                    <td>{{customer.org}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+<div style="display:none;">
+
+<ul id="sortable">
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 3</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 4</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 5</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
+</ul>
+    </div>
+
+</div> <!-- /container -->
+
+
+
+
+
+
+
+</script>
+
+

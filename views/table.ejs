@@ -1,0 +1,110 @@
+
+<style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; }
+  </style>
+  <script>
+  $(function() {
+    $( "#sortable" ).sortable();
+    $( "#sortable" ).disableSelection();
+    
+  });
+  </script>
+
+  <script>
+
+function FocusElement (id)
+{
+  $('#' + id).focus();
+}
+
+
+$( document ).ready(function() {
+    var sortdirection = 'desc';
+    var sortby = 'user_email';
+    var org = 'org';
+    var tablename = 'user';
+    var action = 'list';
+    var id = 'excelDataTable';
+    var headerNames = [];
+    headerNames['user_email'] = "Email";
+    headerNames['user_name'] = "Name";
+
+    var headerNames2 = [];
+    headerNames2['user_email'] = "Email 2";
+    headerNames2['user_name'] = "Name 3";
+    // displayTable(id, org, tablename, sortby, sortdirection, action);
+
+    var table1 = new EISTable(id, sortby, headerNames);
+    var table2 = new EISTable(id + '2', sortby, headerNames2);
+    table1.displayTable(id, org, tablename, sortby, sortdirection, action, headerNames);
+    table2.displayTable(id + '2', org, tablename, sortby, sortdirection, action, headerNames2);
+
+    headerNames2['user_name'] = "Name 4";
+    new EISTable('testDataTable','user_name',headerNames2).displayTable('testDataTable','org','users','user_name','desc','list', headerNames2);
+  
+});
+
+
+  </script>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="#"><%= title %></a>
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+      <div id="errorWrapper" style="display:none;">
+          <%-error%> 
+      </div>
+
+     
+  <table id="excelDataTable" class="table table-striped table-bordered table-condensed">
+  </table>
+
+    <table id="excelDataTable2" class="table table-striped table-bordered table-condensed">
+  </table>
+
+   <table id="testDataTable" class="table table-striped table-bordered table-condensed">
+  </table>
+
+
+<!--
+<ul id="sortable">
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 3</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 4</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 5</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
+</ul>
+-->
+
+</div> <!-- /container -->
+
+<%-js%>
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/plugins/jquery-popover/jquery.cf.popover.min.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/validate.js"></script>
