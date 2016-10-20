@@ -1,0 +1,112 @@
+
+<link rel="stylesheet" href="/css/timeline.css" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+<body>
+<script>
+    var titleTemplate = '<div class="timeline-badge"><i class="glyphicon glyphicon-credit-card"></i></div><div class="timeline-panel"><div class="timeline-heading"><h4 class="timeline-title">[TITLE]</h4><p><small class="text-muted"><i class="glyphicon glyphicon-time"></i>&nbsp;&nbsp;[TIME]</small></p></div>';
+    // [TITLE] [TIME]
+    var bodyTemplate = '<div class="timeline-body"><p>[BODY]</p></div></div>';
+    // [BODY]
+
+function formatDate (strDate)
+{
+    var year = strDate.substring(0,4);
+    var mnth = strDate.substring(4,6);
+    var day = strDate.substring(6);
+    var month = "";
+
+    switch (parseInt(mnth))
+    {
+        case 1:
+            month = "January";
+            break;
+        case 2:
+            month = "February";
+            break;
+        case 3:
+            month = "March";
+            break;
+        case 4:
+            month = "April";
+            break;
+        case 5:
+            month = "May";
+            break;
+        case 6:
+            month = "June";
+            break;
+        case 7:
+            month = "July";
+            break;
+        case 8:
+            month = "August";
+            break;
+        case 9:
+            month = "September";
+            break;
+        case 10:
+            month = "October";
+            break;
+        case 11:
+            month = "November";
+            break;
+        case 12:
+            month = "December";
+            break;
+    }
+    var strRet = month + " " + day + ", " + year;
+
+    return strRet;
+
+}
+
+$(document).ready(function () {
+    var html = '';
+
+    html += '<ul class="timeline">';
+    var closed = '<span style="float:right;color:red;" class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>';
+    var open = '<span style="float:right;color:blue;" class="glyphicon glyphicon-time" aria-hidden="true"></span>';
+    var openclosed = '';
+    $.ajax({
+            type: 'GET',
+            url: '/list/demo/WorkOrder/LastUpdatedDate/desc',
+            dataType: 'json',
+            cache: false,
+            success: function(result) {
+                for (var i=0; i < result.length; i++)
+                {
+                    openclosed = open;
+                    if (result[i].Status == "Closed")
+                    {
+                        openclosed = closed;
+                    }
+                    var entry = titleTemplate.replace('[TIME]',result[i].dtWorkOrderTime + ' Estimate: ' + result[i].TimeEstimate + 'h' + ' ' + result[i].Status).replace('[TITLE]', formatDate(result[i].dtWorkOrderEntry) + '&nbsp;&nbsp;' + openclosed ) +  bodyTemplate.replace('[BODY]','<a href="/view/workorder-form/' + result[i].demoworkorder_id + '">' + result[i].WorkOrderEntry + '</a>');
+                    html += '<li>' + entry + '</li>';
+                }
+                html += '</ul>';
+                $("#content").html(html);
+            },
+        });
+
+
+});
+
+
+</script>
+
+
+<div class="container">
+    <a class="btn btn-primary btn-lg" href="/list/demo/WorkOrder" alt="API"><i class="glyphicon glyphicon-list"></i></a>
+    <a class="btn btn-primary btn-lg" href="/demo/WorkOrder/delete/1" alt="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>
+    <a class="btn btn-primary btn-lg" href="/view/WorkOrder-timeline" alt="Data Timeline"><i class="glyphicon glyphicon-tasks"></i></a>
+    <a class="btn btn-primary btn-lg" href="/view/workorder-form/-1" alt="Refresh Form"><i class="glyphicon glyphicon-refresh"></i></a>
+<div id="content"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

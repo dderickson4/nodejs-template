@@ -1,0 +1,134 @@
+
+<link rel="stylesheet" href="/css/timeline.css" />
+<link rel="stylesheet" href="/css/panels.css" />
+<body>
+<script>
+    var deleteButton = '<button onclick="javascript:deleteRecord([ID]);" class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button>';
+    // [ID]
+    var titleTemplate = '<div class="timeline-badge"><i class="glyphicon glyphicon-paperclip"></i></div><div class="timeline-panel"><div class="timeline-heading"><h4 class="timeline-title">' + deleteButton + '&nbsp;&nbsp;[TITLE] </h4><p><small class="text-muted"><i class="glyphicon glyphicon-time"></i>&nbsp;&nbsp;[TIME]</small></p></div>';
+    // [TITLE] [TIME]
+    var bodyTemplate = '<div class="timeline-body"><p>[BODY]</p></div></div>';
+    // [BODY]
+
+
+    titleTemplate2 = '<div class="panel panel-primary"><div class="panel-leftheading"><h3 class="panel-lefttitle">[TITLE] [TIME]</h3></div>'
+    bodyTemplate2 = '<div class="panel-rightbody"><p>[BODY]</p></div><div class="clearfix"></div></div>';
+function deleteRecord (id)
+{
+    var r = confirm("Are you sure you want to delete record " + id + "?");
+    if (r == true) {
+        alert('ok pressed');
+        $.ajax({url: '/demo/MyDiary/delete/' + id, success: function(result){
+            $("#Message").show();
+            $("#Message").html(result.data.affectedRows + ' Record(s) deleted.');
+            $("#content").html('');
+            loaddata();
+            setTimeout(function () {
+                $("#Message").fadeOut(1000);
+            }, 1500);
+        }});
+
+    } else {
+
+    }
+}
+function formatDate (strDate)
+{
+    var year = strDate.substring(0,4);
+    var mnth = strDate.substring(4,6);
+    var day = strDate.substring(6);
+    var month = "";
+
+    switch (parseInt(mnth))
+    {
+        case 1:
+            month = "January";
+            break;
+        case 2:
+            month = "February";
+            break;
+        case 3:
+            month = "March";
+            break;
+        case 4:
+            month = "April";
+            break;
+        case 5:
+            month = "May";
+            break;
+        case 6:
+            month = "June";
+            break;
+        case 7:
+            month = "July";
+            break;
+        case 8:
+            month = "August";
+            break;
+        case 9:
+            month = "September";
+            break;
+        case 10:
+            month = "October";
+            break;
+        case 11:
+            month = "November";
+            break;
+        case 12:
+            month = "December";
+            break;
+    }
+    var strRet = month + " " + day + ", " + year;
+
+    return strRet;
+
+}
+
+function loaddata () {
+    $("#Message").hide();
+    var html = '';
+    var html2 = '';
+
+    html += '<ul class="timeline">';
+
+    $.ajax({
+            type: 'GET',
+            url: '/list/demo/MyDiary/CreatedDate/Desc',
+            dataType: 'json',
+            cache: false,
+            success: function(result) {
+                for (var i=0; i < result.length; i++)
+                {
+                    var entry = titleTemplate.replace('[ID]',result[i].demoMyDiary_id).replace('[TIME]',result[i].dtDiaryTime).replace('[TITLE]', formatDate(result[i].dtDiaryEntry)) + bodyTemplate.replace('[BODY]','<a style="text-decoration:none;cursor:hand;" href="/view/diary-form/"' + result[i].demoMyDiary_id + '">' + result[i].DiaryEntry + '</a>');
+                    //var entry2 = titleTemplate2.replace('[TIME]',result[i].dtDiaryTime).replace('[TITLE]', formatDate(result[i].dtDiaryEntry)) + bodyTemplate.replace('[BODY]',result[i].DiaryEntry);
+
+                    html += '<li>' + entry + '</li>';
+                    //html2 += entry2;
+                }
+                html += '</ul>';
+                $("#content").html(html);
+                //$("#content2").html(html2);
+            },
+        });
+
+}
+
+$(document).ready(function () {
+    loaddata();
+
+});
+</script>
+<div id="Message" class="alert alert-success"></div>
+<div class="container">
+<a class="btn btn-primary btn-lg" href="/list/demo/MyDiary" alt="API"><i class="glyphicon glyphicon-list"></i></a>
+<a class="btn btn-primary btn-lg" href="/demo/MyDiary/delete/1" alt="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>
+<a class="btn btn-primary btn-lg" href="/view/diary-timeline" alt="Data Timeline"><i class="glyphicon glyphicon-tasks"></i></a>
+<a class="btn btn-primary btn-lg" href="/view/diary-form/-1" alt="Refresh Form"><i class="glyphicon glyphicon-refresh"></i></a>
+
+<div id="content"></div>
+</div>
+<div id="content2"></div>
+
+
+</body>
+</html>

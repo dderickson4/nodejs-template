@@ -49,7 +49,7 @@ function EISTable (id, defaultsort, headerNames)
     function getStyle (key)
     {
       if (key.indexOf("__") != -1 || ContainsString(arrHide,key))
-        return 'style="display:none;"';
+        return 'style="display:block;"';
       return "";
     }
     function addAllColumnHeaders(id, myList)

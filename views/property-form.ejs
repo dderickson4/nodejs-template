@@ -1,0 +1,339 @@
+
+<script>
+  $(document).ready(function () {
+    //$('#submit').click(function() {
+    //  $(this).parents('form:first').submit();
+    //});
+    $('#submit').click(function(e) {
+        e.preventDefault();
+        //savedata();
+        $(this).parents('form:first').submit();
+    });
+    $("#reset").click(function() {
+        $(this).closest('form').find("input[type=text], textarea").val("");
+        initfields();
+    });
+  })
+
+
+</script>
+
+<script>
+
+function savedata () {
+    var fields = $( "#form" ).serializeArray();
+        var ret = {};
+        //$( "#results" ).empty();
+            jQuery.each( fields, function( i, field ) {
+                ret[field.name] = field.value;
+                //$( "#results" ).append( field.value + " " );
+        });
+
+        ret["displayImage"] = $("#displayImage").val();
+    alert(JSON.stringify(ret));
+        $.ajax ({
+            type: "POST",
+            //the url where you want to sent the userName and password to
+            url: '/postfile/property/Name',
+            dataType: 'json',
+            async: false,
+            //json object to sent to the authentication url
+            data: ret,
+            success: function () {
+                alert("Thanks!");
+            }
+        });
+
+}
+
+function initfields () {
+    $("#PropertyEntry").focus();
+    $("#TimeEstimate").val(1);
+    $("#ActualTime").val("1");
+    $("#CreatedBy").val("David Erickson");
+    $("#Category").val("Rental");
+    $("#Status").val("Open");
+
+    $("#dtPropertyEntry").val(getFormattedDate(new Date()));
+    $("#dtPropertyTime").val(formatTime(new Date()));
+
+    <% if (formdata != null) {  if(formdata.length > 0) { %>
+    $("#Rate").val("<%=formdata[0].Rate%>");
+    $("#DateFrom").val("<%=formdata[0].DateFrom%>");
+    $("#DateTo").val("<%=formdata[0].DateTo%>");
+    $("#Notes").val("<%=formdata[0].Notes%>");
+    $("#Name").val("<%=formdata[0].Name%>");
+    $("#Description").val("<%=formdata[0].Description%>");
+
+    $("#Address").val("<%=formdata[0].Address%>");
+    $("#City").val("<%=formdata[0].City%>");
+    $("#Region").val("<%=formdata[0].Region%>");
+    $("#PostalCode").val("<%=formdata[0].PostalCode%>");
+    $("#Country").val("<%=formdata[0].Country%>");
+    $("#Phone").val("<%=formdata[0].Phone%>");
+    $("#Fax").val("<%=formdata[0].Fax%>");
+
+
+    $("#CreatedBy").val("<%=formdata[0].CreatedBy%>");
+    $("#Category").val("<%=formdata[0].Category%>");
+    $("#Status").val("<%=formdata[0].Status%>");
+    $("#dtPropertyEntry").val("<%=formdata[0].dtPropertyEntry%>");
+<% } }%>
+}
+$(function() {
+
+    $( ".datepicker" ).datepicker();
+    initfields();
+
+    $("#reset").click();
+
+
+
+});
+
+function getFormattedDate(date) {
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear().toString();
+    return year + '' + month + '' + day;
+}
+
+function formatTime(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return strTime;
+}
+</script>
+
+<div id="errorWrapper" style="display:none;">
+    <%-error%>
+</div>
+
+<div class="container">
+
+
+
+        <form id="form" class="form-horizontal jumbotron" method="post" action="/postfile/property/Name" enctype="multipart/form-data">
+            <fieldset>
+                <legend>Property</legend>
+
+                <a class="btn btn-primary btn-lg" href="/list/demo/Property" alt="API"><i class="glyphicon glyphicon-list"></i></a>
+                <a class="btn btn-primary btn-lg" href="/demo/Property/delete/1" alt="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>
+                <a class="btn btn-primary btn-lg" href="/view/Property-timeline" alt="Data Timeline"><i class="glyphicon glyphicon-tasks"></i></a>
+                <a class="btn btn-primary btn-lg" href="/view/Property-form/-1" alt="Refresh Form"><i class="glyphicon glyphicon-refresh"></i></a>
+
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="control-label" for="dtPropertyEntry">Date</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge datepicker form-control" id="dtPropertyEntry" name="dtPropertyEntry" rel="popover" data-content="Enter today's date." data-original-title="Enter today's date.">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="dtPropertyTime">Time</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="dtPropertyTime" name="dtPropertyTime" rel="popover" data-content="Enter time of entry." data-original-title="Enter time of Entry.">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="Category">Category</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Category" name="Category" rel="popover" data-content="Enter Category." data-original-title="Enter Category.">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="Status">Status</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Status" name="Status" rel="popover" data-content="Enter Status." data-original-title="Enter Status.">
+                        </div>
+                    </div>
+                 </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="control-label" for="Rate">Rate</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Rate" name="Rate" rel="popover" data-content="Enter Rate." data-original-title="Enter Rate.">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="DateFrom">Date From</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge datepicker form-control" id="DateFrom" name="DateFrom" rel="popover" data-content="Enter from date." data-original-title="Enter from date.">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="DateTo">Date To</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge datepicker form-control" id="DateTo" name="DateTo" rel="popover" data-content="Enter to date." data-original-title="Enter to date.">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="control-label" for="Notes">Notes</label>
+                        <div class="controls">
+                            <textarea rows="5" class="input-xlarge form-control" id="Notes" name="Notes" rel="popover" data-content="Enter notes." data-original-title="Enter notes."></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <label class="control-label" for="Name">Name</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Name" name="Name" rel="popover" data-content="Enter Name." data-original-title="Name">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label" for="Description">Description</label>
+                        <div class="controls">
+                            <textarea rows="5" class="input-xlarge form-control" id="Description" name="Description" rel="popover" data-content="Enter Description." data-original-title="Description"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="control-label" for="Address">Address</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Address" name="Address" rel="popover" data-content="Enter your Address." data-original-title="Address">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label" for="City">City</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="City" name="City" rel="popover" data-content="Enter your City." data-original-title="City">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="control-label" for="Region">Region</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Region" name="Region" rel="popover" data-content="Enter your Region." data-original-title="Region">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="PostalCode">Postal Code</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="PostalCode" name="PostalCode" rel="popover" data-content="Enter your PostalCode." data-original-title="PostalCode">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="Country">Country</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Country" name="Country" rel="popover" data-content="Enter your Country." data-original-title="Country">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <label class="control-label" for="Phone">Phone</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Phone" name="Phone" rel="popover" data-content="Enter your Phone." data-original-title="Phone">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label" for="Fax">Fax</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Fax" name="Fax" rel="popover" data-content="Enter your Fax." data-original-title="Fax">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+
+                    <div class="col-md-2">
+                        <label class="control-label" for="CreatedBy">Created By</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge" id="CreatedBy" name="CreatedBy" rel="popover" data-content="Created By." data-original-title="Created By.">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-controls">
+                    <label class="control-label" for="displayImage">Upload Files</label>
+                    <input id="displayImage" type="file" name="displayImage" ></br>
+                    <% if (formdata != null) { if (formdata.length > 0) { %>
+                    <% if (formdata[0].Picture != null) { %>
+                    <img src="<%=formdata[0].Picture%>" class="img-rounded" alt="" width="304" height="236">
+                    <% } } } %>
+
+                </div>
+
+
+                <Br><br>
+
+                <div class="footer">
+                    <a id="submit" class="btn btn-primary" href="#" el="tooltip" title="Save Record"><i class="icon-save icon-white"></i>&nbsp;&nbsp;Save</a>
+                    <a id="reset" class="btn btn-primary" href="#" el="tooltip" title="Reset form"><i class="icon-cancel icon-white"></i>&nbsp;&nbsp;Clear</a>
+                </div>
+
+
+            </fieldset>
+        </form>
+
+
+
+
+        </br></br></br>
+
+        <footer class="footer">
+            <p>© 2016 EIS Software, Inc.</p>
+        </footer>
+
+</div> <!-- /container -->
+
+<%-js%>
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <script src="js/plugins/jquery-popover/jquery.cf.popover.min.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/validate.js"></script>
+    
+
+
+      <!-- Add mousewheel plugin (this is optional) -->
+      <!--
+      <script type="text/javascript" src="/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+      -->
+    <!-- Add fancyBox main JS and CSS files -->
+    <script type="text/javascript" src="/js/jquery.browser.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
+    <script type="text/javascript" src="/js/fancybox/jquery.fancybox.js?v=2.1.5"></script>
+  
+    <script type="text/javascript">
+      $(document).ready(function() {   
+        $('.fancybox').fancybox();
+        $(":input").bind('keypress', function(e){
+          var id = $(this).attr('id');
+          console.log(id);
+          var code = (e.keyCode ? e.keyCode : e.which);
+           if(code == 13) { //Enter keycode
+             //Do something
+             console.log('enter key' + id);
+             var form_json = $("form:first").serializeArray();
+             form_json.currentid = id;
+             console.log(form_json);
+           }
+        })
+      });
+    </script>
+
+
+
