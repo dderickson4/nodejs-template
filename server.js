@@ -8,17 +8,134 @@ var port = 5000;
 var app = require('./app').init(port);
 var fs = require('fs');
 
+/*
+var nodemailer = require('nodemailer');
 
+// create reusable transporter object using the default SMTP transport
+var transporter = nodemailer.createTransport('smtps://mail.yahoo.com:poiuyhjkl@smtp.yahoo.com');
 
+// setup e-mail data with unicode symbols
+var mailOptions = {
+    from: '"Fred Foo ?" <daviddouglaserickson@yahoo.com>', // sender address
+    to: 'daviddouglaserickson@yahoo.com, daviddouglaserickson@yahoo.com', // list of receivers
+    subject: 'Hello ✔', // Subject line
+    text: 'Hello world ?', // plaintext body
+    html: '<b>Hello world ?</b>' // html body
+};
+
+// send mail with defined transport object
+transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+        return console.log(error);
+    }
+    console.log('Message sent: ' + info.response);
+});
+*/
 
 var redisdb = require('./models/redisdb.js');
 var utils = require('./models/formutils.js');
 
 app.get('/', function(req,res){
+       utils.locals.date = new Date().toLocaleDateString();
+       utils.Message('');
+       res.render('home.ejs', utils.locals);
+});
+
+app.get('/history', function(req,res){
+   utils.locals.date = new Date().toLocaleDateString();
+   utils.Message('');
+   res.render('history.ejs', utils.locals);
+});
+
+app.get('/contact', function(req,res){
     utils.locals.date = new Date().toLocaleDateString();
     utils.Message('');
-    res.render('home.ejs', utils.locals);
+    res.render('contact.ejs', utils.locals);
 });
+
+app.get('/webdetails', function(req,res){
+     utils.locals.date = new Date().toLocaleDateString();
+     utils.Message('');
+     res.render('webdetails.ejs', utils.locals);
+});
+
+app.get('/apidetails', function(req,res){
+    utils.locals.date = new Date().toLocaleDateString();
+    utils.Message('');
+    res.render('apidetails.ejs', utils.locals);
+});
+
+app.get('/mobiledetails', function(req,res){
+    utils.locals.date = new Date().toLocaleDateString();
+    utils.Message('');
+    res.render('mobiledetails.ejs', utils.locals);
+});
+
+app.get('/multiweb', function(req,res){
+    utils.locals.date = new Date().toLocaleDateString();
+    utils.Message('');
+    res.render('multiweb.ejs', utils.locals);
+});
+
+app.get('/customer-form', function(req,res){
+      utils.locals.date = new Date().toLocaleDateString();
+      utils.Message('');
+      res.render('customer-form.ejs', utils.locals);
+   });
+
+   app.get('/diary-form', function(req,res){
+      utils.locals.date = new Date().toLocaleDateString();
+      utils.Message('');
+      res.render('diary-form.ejs', utils.locals);
+   });
+
+  app.get('/view/:formname/:keys', function(req,res){
+     utils.locals.date = new Date().toLocaleDateString();
+     utils.Message('');
+     utils.Error('');
+     var view = req.params.formname;
+     var prefix = "demo";
+     var sql = "SELECT * FROM " + prefix + view.replace("-form","") + " WHERE " + prefix + view.replace("-form","_id") + " = " + req.params.keys + ";";
+     console.log(sql);
+     client.query(sql, function (err, data)
+     {
+        if (!err)
+        {
+            utils.Error(err);
+        }
+        if (!data)
+        {
+            var ret = {};
+
+            data = [];
+            data.push(ret);
+        }
+        utils.FormData(data);
+        console.log(utils.locals);
+        res.render(view + '.ejs', utils.locals);
+     });
+  });
+
+  app.get('/view/:formname', function(req,res){
+       utils.locals.date = new Date().toLocaleDateString();
+       utils.Message('');
+       utils.Error('');
+       var view = req.params.formname;
+       //var prefix = "demo";
+       //var sql = "SELECT * FROM " + prefix + view.replace("-form","") + " WHERE " + prefix + view.replace("-form","_id") + " = " + req.params.keys + ";";
+       //console.log(sql);
+       //client.query(sql, function (err, data)
+       //{
+       //   if (!err)
+       //   {
+       //       utils.Error(err);
+       //   }
+       //   utils.FormData(data);
+       //   console.log(utils.locals);
+       res.render(view + '.ejs', utils.locals);
+       //});
+    });
+
 
 var mysql = require('mysql');
 var MYSQL_USERNAME = 'root';
@@ -198,7 +315,61 @@ END MESSAGING CODE
 */
 
 
+/* START SaveAndGet function */
+SaveAndGet = function (tblPrefix, org, tablename, keys, jsonData, callback)
+{
+    var table = tablename;
+    var formdata = jsonData;
+    var arrSaveKeys = keys.split('|');
 
+    /// START SECTION
+    // EXAMPLE OF ADDING A COLUMN
+    // ALTER TABLE `demoworkorder` ADD COLUMN `Category` VARCHAR(45) NULL DEFAULT NULL  AFTER `dtWorkOrderTime` ;
+
+    JsonToCreateTableSQL(tblPrefix, org, "id", table,formdata, function (err, sql) {
+           log(sql);
+           client.query(sql + ';', function (err, data)
+           {
+               log(data);
+
+               JsonToSQLWithPrimaryKeys(tblPrefix, org, arrSaveKeys, table,formdata, function (err, sql, whereclause) {
+                  client.query(sql + ';', function (err, data)
+                  {
+                       log(err);
+                       log(data);
+                       if (err)
+                       {
+                           utils.Error(err);
+                       }
+                       utils.locals['data'] = data;
+
+                       if (whereclause.length > 0)
+                       {
+                           sql = "SELECT " + tblPrefix + table + "_id AS id" + " FROM " + tblPrefix + table + " " + whereclause + ";";
+                       } else
+                       {
+                          sql = "SELECT LAST_INSERT_ID() AS id;";
+                       }
+
+                       utils.FormData('');
+                       // AFTER THE POST FIND OUT THE ID OF THE LAST INSERTED FIELD.
+                       client.query(sql,function (err,results,fields) {
+                               sql = "SELECT * FROM " + tblPrefix + table + " WHERE " + tblPrefix + table + "_id=" + results[0].id;
+                               log(sql);
+                               client.query(sql,function (err,data) {
+                                   if (callback)
+                                   {
+                                        callback(err,data);
+                                   }
+                               });
+                       });
+                  });
+               });
+           });
+    });
+
+              /// END SECTION
+};
 
 /* START JSON to SQL function */
 JsonToCreateTableSQL = function (tblPrefix, org, pkcolumn, tablename, jsonData, callback)
@@ -226,6 +397,10 @@ JsonToCreateTableSQL = function (tblPrefix, org, pkcolumn, tablename, jsonData, 
 		}
 	}
 
+	sql += " " + cLeftBracket + "CreatedDate" + cRightBracket + " " + "DATETIME" + " ,";
+	sql += " " + cLeftBracket + "LastUpdatedDate" + cRightBracket + " " + "DATETIME" + " ,";
+
+
 	sql += " primary key (" + cLeftBracket + tblPrefix + tablename + "_id" + cRightBracket + ")"+
 		");";
 
@@ -240,6 +415,136 @@ JsonToCreateTableSQL = function (tblPrefix, org, pkcolumn, tablename, jsonData, 
     }
 
 };
+
+
+JsonToSQLWithPrimaryKeys = function (tblPrefix, org, pkcolumns, tablename, jsonData, callback)
+{
+    tablename = tblPrefix + tablename;
+
+    var ret = {};
+    var err = null;
+
+    var sql = "INSERT INTO ";
+    sql += tablename;
+
+    var pkvalue = "";
+
+    log("PKCOLUMN IS......" + pkcolumns);
+    log("tablename IS......" + tablename);
+
+    var whereclause = "";
+    for(i in jsonData)
+    {
+        var col = i;
+        for (var k = 0; k < pkcolumns.length; k++) {
+            log ("********" + col + "************");
+            log ("*******=>" + pkcolumns[k]);
+            if (pkcolumns[k] == col)
+            {
+                if (whereclause.length > 0)
+                {
+                    whereclause += " AND "
+                }
+                whereclause += col + "=" + client.escape(jsonData[col]) + ""
+            }
+        }
+
+    }
+    if (whereclause.length > 0)
+    {
+        whereclause = " WHERE " + whereclause;
+    }
+    var select = "SELECT * FROM " + tablename + whereclause +";";
+    log(select);
+
+    client.query(select, function (err, data)
+    {
+        var isInsert = true;
+        if ((data.length > 0) == true)
+        {
+            isInsert = false;
+        }
+        log(isInsert);
+        var sqlupdates = "";
+            if ((data.length > 0) == true)
+            {
+                // CREATE AN UPDATE QUERY
+                sql = "UPDATE " + tablename + " SET LastUpdatedDate=now()" + ",";
+                for(_key in jsonData)
+                {
+                    if (_key.trim().length > 0)
+                    {
+                        var val = jsonData[_key];
+
+                        if (_key.indexOf (SKIP_KEY) == -1)
+                        {
+                            if (_key == tablename.substring(tblPrefix.length) + "_id"  || _key == "CreatedDate" || _key == "CreatedBy" || _key == "LastUpdatedDate" || _key == "LastUpdatedBy")
+                            {
+
+                            } else {
+
+                                sqlupdates += " " + _key + "=" + client.escape(val) + ",";
+                            }
+                        }
+
+                    }
+                }
+                if (sqlupdates.length > 0)
+                {
+                    sqlupdates = sqlupdates.substring(0, sqlupdates.length - 1);
+                }
+                sql = sql + sqlupdates + whereclause + ";";
+
+            } else {
+                // CREATE AN INSERT QUERY
+                sql = "INSERT INTO " + tablename + " (CreatedDate,LastUpdatedDate,"; // ) VALUES ()
+                sqlupdates = "";
+                for(_key in jsonData)
+                {
+                    if (_key.trim().length > 0)
+                    {
+                        var val = jsonData[_key];
+
+                        if (_key.indexOf (SKIP_KEY) == -1)
+                        {
+                            //sql += _key;
+                            //sql += ",";
+                        }
+                        if (_key == tablename.substring(tblPrefix.length) + "_id")
+                        {
+
+                        } else {
+                            sql += " " + _key + " " + ",";
+                            // here remove duplicates , ''
+                            sqlupdates += " " + client.escape(val) + ",";
+                        }
+                    }
+
+                }
+                if (sqlupdates.length > 0)
+                {
+                    sqlupdates = sqlupdates.substring(0, sqlupdates.length - 1);
+                }
+                if (sql.length > 0)
+                {
+                    sql = sql.substring(0, sql.length - 1);
+                }
+                sql = sql + ") VALUES (now(),now()," + sqlupdates + ")";
+            }
+
+            log(sql);
+
+            if (callback != null)
+            {
+                callback(err,sql, whereclause);
+            } else {
+                return sql;
+            }
+
+    });
+
+
+}
 
 
 JsonToSQL = function (tblPrefix, org, pkcolumn, tablename, formdata, callback)
@@ -595,12 +900,20 @@ app.get('/login', function(req, res){
 app.get('/dashboard', function(req, res){
 	var user = User(req);
     utils.locals['user'] = user;
-    utils.locals['title'] = 'Shopping Bazaar';
+    utils.locals['title'] = 'Erickson Information Systems';
 	res.render('dashboard.ejs', utils.locals);
 });
 
 app.get('/customers', function(req, res){
 	var viewname = 'customers';
+	var user = { user_name: 'David', user_email: 'daviddouglaserickson@yahoo.com', gender: 'male'};
+    utils.locals['data'] = user;
+    utils.Message('Form to fill in customer information');
+	res.render(viewname + '.ejs', utils.locals);
+});
+
+app.get('/jobs', function(req, res){
+	var viewname = 'job-form';
 	var user = { user_name: 'David', user_email: 'daviddouglaserickson@yahoo.com', gender: 'male'};
     utils.locals['data'] = user;
     utils.Message('Form to fill in customer information');
@@ -727,6 +1040,25 @@ app.get ('/list/:prefix/:tablename', function (req,res) {
     var tblprefix = req.params.prefix;
     //sql = "SELECT `COLUMN_NAME` from INFORMATION_SCHEMA.COLUMNS where table_schema='" + dbName + "' AND table_name= '" + tblprefix + tablename + "';";
     var sql = "SELECT * FROM " + tblprefix + tablename;
+    log(sql);
+    client.query(sql, function (err, data)
+    {
+        if (err)
+        {
+            res.send (err);
+        } else {
+            res.send(data);
+        }
+    });
+});
+
+app.get ('/list/:prefix/:tablename/:orderby/:direction', function (req,res) {
+    var tablename = req.params.tablename;
+    var tblprefix = req.params.prefix;
+    //sql = "SELECT `COLUMN_NAME` from INFORMATION_SCHEMA.COLUMNS where table_schema='" + dbName + "' AND table_name= '" + tblprefix + tablename + "';";
+    var sql = "SELECT * FROM " + tblprefix + tablename;
+    sql += " ORDER BY " + req.params.orderby + " " + req.params.direction;
+
     log(sql);
     client.query(sql, function (err, data)
     {
@@ -971,6 +1303,338 @@ app.post('/customers', function (req, res) {
 });
 
 
+app.post('/MyCustomers', function (req, res) {
+
+	var formdata = req.body;
+	console.log (formdata);
+	var org = 'org';
+	var tblPrefix = 'demo';
+	var table = 'MyCustomers';
+	var location = '/diary-form';
+	var viewpage = 'diary-form.ejs';
+
+	var arrLookupKeys = [];
+	arrLookupKeys.push(formdata.id);
+
+
+	var arrSaveKeys = [];
+
+	arrSaveKeys.push(formdata.CompanyName);
+	arrSaveKeys.push(formdata.ContactName);
+    // http://localhost:5000/list/demo/MyCustomers
+	JsonToCreateTableSQL(tblPrefix, org, "id", table,formdata, function (err, sql) {
+            log(sql);
+            client.query(sql + ';', function (err, data)
+            {
+                log(data);
+                JsonToSQL(tblPrefix, org, "id", table,formdata, function (err, sql) {
+                   client.query(sql + ';', function (err, data)
+                   {
+                    log(err);
+                    log(data);
+                        if (err)
+                        {
+                            utils.Error(err);
+                        }
+                        utils.locals['data'] = data;
+                        res.render(viewpage,utils.locals);
+
+                   });
+                });
+            });
+    });
+});
+
+app.post('/MyDiary', function (req, res) {
+
+	var formdata = req.body;
+	console.log (formdata);
+	var org = 'org';
+	var tblPrefix = 'demo';
+	var table = 'MyDiary';
+	var location = '/diary-form';
+	var viewpage = 'diary-form.ejs';
+
+	var arrLookupKeys = [];
+	arrLookupKeys.push(formdata.id);
+
+
+
+	var arrSaveKeys = ["dtDiaryEntry","dtDiaryTime"];
+    // http://localhost:5000/list/demo/MyCustomers
+	JsonToCreateTableSQL(tblPrefix, org, "id", table,formdata, function (err, sql) {
+            log(sql);
+            client.query(sql + ';', function (err, data)
+            {
+                log(data);
+                JsonToSQLWithPrimaryKeys(tblPrefix, org, arrSaveKeys, table,formdata, function (err, sql) {
+                   client.query(sql + ';', function (err, data)
+                   {
+                    log(err);
+                    log(data);
+                        if (err)
+                        {
+                            utils.Error(err);
+                        }
+                        utils.locals['data'] = data;
+                        res.render(viewpage,utils.locals);
+
+                   });
+                });
+            });
+    });
+});
+
+
+app.post('/postfile/:tablename/:keys', function (req, res) {
+
+	var formdata = req.body;
+	console.log (formdata);
+	var org = 'org';
+	var tblPrefix = 'demo';
+	var table = req.params.tablename;
+	var location = '/view/' + table + '-form';
+	var viewpage = table + '-form.ejs';
+
+	var arrLookupKeys = [];
+	arrLookupKeys.push(formdata.id);
+
+	var arrSaveKeys = req.params.keys.split('|'); //["dtDiaryEntry","dtDiaryTime"];
+    // http://localhost:5000/list/demo/MyCustomers
+    // tabula rasa
+    utils.Error('');
+    log (req.files);
+
+    //for (var i=0; i < req.files.displayImage.length; i++)
+    //{
+
+    //if (formdata.displayImage != null)
+    //{
+        var path = req.files.displayImage.path;
+        var pictureid = guid();
+        formdata.Picture = "/saved-pictures/" + pictureid;
+        fs.readFile(path, function (err, data) {
+
+          var newPath = __dirname + "/uploads/" + pictureid;
+
+          fs.writeFile(newPath, data, function (err) {
+              if (!err) {
+
+              } else {
+                log (err);
+              }
+              SaveAndGet (tblPrefix, org, table, req.params.keys, formdata, function (err, data)
+               {
+                  if (err)
+                  {
+                     utils.Error(err);
+                  }
+                  log (data);
+                  utils.FormData(data);
+                  //res.send(utils.locals);
+                  res.render(viewpage,utils.locals);
+               });
+
+
+          });
+        });
+     //}
+
+
+
+});
+
+app.post('/post/:tablename/:keys', function (req, res) {
+
+	var formdata = req.body;
+	console.log (formdata);
+	var org = 'org';
+	var tblPrefix = 'demo';
+	var table = req.params.tablename;
+	var location = '/view/' + table + '-form';
+	var viewpage = table + '-form.ejs';
+
+	var arrLookupKeys = [];
+	arrLookupKeys.push(formdata.id);
+
+	var arrSaveKeys = req.params.keys.split('|'); //["dtDiaryEntry","dtDiaryTime"];
+    // http://localhost:5000/list/demo/MyCustomers
+    // tabula rasa
+    utils.Error('');
+
+    //if (formdata.displayImage != null)
+    //{
+        log (req.files);
+
+        //for (var i=0; i < req.files.displayImage.length; i++)
+        //{
+
+        if (formdata.displayImage != null)
+        {
+            var path = req.files.displayImage.path;
+            var pictureid = guid();
+            formdata.Picture = "/saved-pictures/" + pictureid;
+            fs.readFile(path, function (err, data) {
+
+              var newPath = __dirname + "/uploads/" + pictureid;
+
+              fs.writeFile(newPath, data, function (err) {
+                  if (!err) {
+
+                  } else {
+                    log (err);
+                  }
+              });
+            });
+         }
+        //}
+
+          /// START SECTION
+           // EXAMPLE OF ADDING A COLUMN
+               // ALTER TABLE `demoworkorder` ADD COLUMN `Category` VARCHAR(45) NULL DEFAULT NULL  AFTER `dtWorkOrderTime` ;
+           	JsonToCreateTableSQL(tblPrefix, org, "id", table,formdata, function (err, sql) {
+                       log(sql);
+                       client.query(sql + ';', function (err, data)
+                       {
+                           log(data);
+
+                           JsonToSQLWithPrimaryKeys(tblPrefix, org, arrSaveKeys, table,formdata, function (err, sql, whereclause) {
+                              client.query(sql + ';', function (err, data)
+                              {
+                               log(err);
+                               log(data);
+                                   if (err)
+                                   {
+                                       utils.Error(err);
+                                   }
+                                   utils.locals['data'] = data;
+
+                                   if (whereclause.length > 0)
+                                   {
+                                       sql = "SELECT " + tblPrefix + table + "_id AS id" + " FROM " + tblPrefix + table + " " + whereclause + ";";
+                                   } else
+                                   {
+                                      sql = "SELECT LAST_INSERT_ID() AS id;";
+                                   }
+
+                                   utils.FormData('');
+                                   // AFTER THE POST FIND OUT THE ID OF THE LAST INSERTED FIELD.
+                                   client.query(sql,function (err,results,fields) {
+
+                                           sql = "SELECT * FROM " + tblPrefix + table + " WHERE " + tblPrefix + table + "_id=" + results[0].id;
+                                           console.log(sql);
+                                           //
+                                           if (err)
+                                           {
+                                               utils.Error(err);
+                                           }
+                                           client.query(sql,function (err,data) {
+                                               if (err)
+                                               {
+                                                   utils.Error(err);
+                                               }
+                                               utils.FormData(data);
+                                               res.render(viewpage,utils.locals);
+                                           });
+
+                                   });
+
+
+
+                              });
+                           });
+                       });
+               });
+
+          /// END SECTION
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //}
+
+
+
+
+
+});
+
+
+
+
+
+app.post('/jobs', function (req, res) {
+
+	var formdata = req.body;
+	console.log (formdata);
+	var org = 'org';
+	var table = 'job';
+
+	var arrLookupKeys = [];
+	arrLookupKeys.push(formdata.id);
+
+
+	var arrSaveKeys = [];
+
+	arrSaveKeys.push(formdata.CompanyName);
+	arrSaveKeys.push(formdata.ContactName);
+	SaveRecord(org, table, arrLookupKeys, arrSaveKeys, formdata, function (err, data)
+	{
+		// ret.action = "NewRecord";
+		// ret.action = "DuplicateRecordOnNewRecord";
+		// ret.action = "UpdateRecord";
+		// ret.action = "NoPrimaryKeyOnUpdateRecord";
+		console.log(data.action);
+		utils.locals['error'] = err;
+		switch (data.action)
+		{
+			case "NewRecord":
+				utils.Message('Record saved!');
+				utils.locals['data'] = data.data;
+				utils.locals['success'] = true;
+				res.writeHead(302, {
+				  'Location': '/job-form'
+				  //add other headers here...
+				});
+				res.end();
+			break;
+			case "DuplicateRecordOnNewRecord":
+				utils.Error('Account already exists. Please enter a new contact name.');
+				utils.locals['js'] += utils.FocusElement('ContactName');
+				utils.locals['data'] = formdata;
+				res.render('job-form.ejs',utils.locals);
+			break;
+			case "UpdateRecord":
+				utils.Message('Account saved!');
+				utils.locals['data'] = data.data;
+				utils.locals['success'] = true;
+				//res.writeHead(302, {
+				//  'Location': '/customers'
+				  //add other headers here...
+				//});
+				//res.end();
+				res.render('job-form.ejs', utils.locals);
+			break;
+			case "NoPrimaryKeyOnUpdateRecord":
+				utils.Error('No Key defined for updating record.');
+				utils.locals['data'] = formdata;
+				res.render('job-form.ejs',utils.locals);
+			break;
+		}
+	});
+});
+
+
 
 app.get ('/:org/:table/delete/:value', function (req, res)
 {
@@ -978,8 +1642,25 @@ app.get ('/:org/:table/delete/:value', function (req, res)
 	var table = req.params.table;
 	var pkValue = req.params.value;
 
+    var sql = "DELETE FROM " + org + table + " WHERE " + org + table + "_id=" + pkValue + ";";
+    client.query(sql, function (err, data)
+        {
+            if (err != null)
+            {
+                //err.count = result;
+                res.send(JSON.stringify(err));
+            } else {
+                var ret = {};
+                ret.result = "Successful!"
+                ret.data = data;
+                res.send(ret);
+            }
+        });
+
+    /*
 	var arrLookupKeys = [];
 	arrLookupKeys.push(pkValue);
+
 
 	redisdb.Delete (org,table,arrLookupKeys, function (err,result) {
 		if (err != null)
@@ -993,6 +1674,7 @@ app.get ('/:org/:table/delete/:value', function (req, res)
 		}
 		
 	});
+	*/
 
 });
 
