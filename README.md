@@ -6,6 +6,7 @@
 - cd node-express-twitter-bootstrap
 - npm install express ejs ejs-locals
 - node server.js
+- committing original files to github October 2nd, 2016
 
 ## Changelog:
 

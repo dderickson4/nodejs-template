@@ -1,0 +1,178 @@
+
+<script>
+  $(document).ready(function () {
+    $('#submit').click(function() {
+      $(this).parents('form:first').submit();
+    });
+    $("#reset").click(function() {
+        $(this).closest('form').find("input[type=text], textarea").val("");
+    });
+  })
+
+
+</script>
+
+<script>
+$(function() {
+    $("#dtlifeEntry").val(getFormattedDate(new Date()));
+
+    $( ".datepicker" ).datepicker();
+    $("#Entry").focus();
+
+
+    $( "#test" ).click(function(e) {
+        e.preventDefault();
+        alert('test clicked');
+        alert('2');
+        var fields = $( "#lifeform" ).serializeArray();
+        var ret = {};
+        $( "#results" ).empty();
+            jQuery.each( fields, function( i, field ) {
+                ret[field.name] = field.value;
+                //$( "#results" ).append( field.value + " " );
+        });
+
+
+        alert(JSON.stringify(ret));
+        //console.log( $("#form").serialize());
+        //$("#message2").html($("#form").serializeObject());
+        //alert($("#lifeform").serializeObject());
+
+        $.ajax ({
+            type: "POST",
+            //the url where you want to sent the userName and password to
+            url: '/post/life/dtlifeEntry',
+            dataType: 'json',
+            async: false,
+            //json object to sent to the authentication url
+            data: ret,
+            success: function () {
+                alert("Thanks!");
+            }
+        });
+
+
+
+
+
+    });
+});
+
+function getFormattedDate(date) {
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear().toString();
+    return year + '' + month + '' + day;
+}
+
+function formatTime(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return strTime;
+}
+</script>
+
+
+<div id="message2"></div>
+
+<div class="container">
+    <div id="errorWrapper" style="display:none;">
+        <%-error%>
+    </div>
+    <div class="container">
+
+        <form id="lifeform" class="form-horizontal" method="post" action="/post/life/dtlifeEntry">
+            <fieldset>
+                <legend>Life Entry
+                </legend>
+
+                <a class="btn btn-primary btn-lg" href="/list/demo/life" alt="API"><i class="glyphicon glyphicon-list"></i></a>
+                <a class="btn btn-primary btn-lg" href="/demo/life/delete/1" alt="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>
+                <a class="btn btn-primary btn-lg" href="/view/life-timeline" alt="Data Timeline"><i class="glyphicon glyphicon-tasks"></i></a>
+                <a class="btn btn-primary btn-lg" href="/view/life-form/-1" alt="Refresh Form"><i class="glyphicon glyphicon-refresh"></i></a>
+                <button id="test" class="btn btn-primary">Serialize Form</button>
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="control-label" for="dtlifeEntry">Date</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge datepicker" id="dtlifeEntry" name="dtlifeEntry" rel="popover" data-content="Enter date." data-original-title="Enter date.">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="Entry">Life Entry</label>
+                    <div class="controls">
+                        <textarea rows="5" class="form-control" id="Entry" name="Entry" rel="popover" data-content="Enter your Life Entry." data-original-title="Enter your Life Entry.">
+                        </textarea>
+                    </div>
+                </div>
+                <Br><br>
+
+                <div class="footer">
+                    <a id="submit" class="btn btn-primary" href="#" el="tooltip" title="Save Record"><i class="icon-save icon-white"></i> Create My Record</a>
+                </div>
+
+
+            </fieldset>
+        </form>
+
+
+
+
+        </br></br></br>
+
+        <footer class="footer">
+            <p>© 2016 EIS Software, Inc.</p>
+        </footer>
+
+</div> <!-- /container -->
+
+<%-js%>
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <script src="js/plugins/jquery-popover/jquery.cf.popover.min.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/validate.js"></script>
+    
+
+
+      <!-- Add mousewheel plugin (this is optional) -->
+      <!--
+      <script type="text/javascript" src="/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+      -->
+    <!-- Add fancyBox main JS and CSS files -->
+    <script type="text/javascript" src="/js/jquery.browser.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
+    <script type="text/javascript" src="/js/fancybox/jquery.fancybox.js?v=2.1.5"></script>
+  
+    <script type="text/javascript">
+      $(document).ready(function() {   
+        $('.fancybox').fancybox();
+        $(":input").bind('keypress', function(e){
+          var id = $(this).attr('id');
+          console.log(id);
+          var code = (e.keyCode ? e.keyCode : e.which);
+           if(code == 13) { //Enter keycode
+             //Do something
+             console.log('enter key' + id);
+             var form_json = $("form:first").serializeArray();
+             form_json.currentid = id;
+             console.log(form_json);
+           }
+        })
+      });
+    </script>
+
+
+

@@ -61,9 +61,20 @@ function FocusElement (id)
 
 function Error (strError)
 {
-	strError = '<div id="alert" class="alert alert-error">' + strError + '</div>';
-	locals['error'] = strError;
-	locals['js'] += '<script>' + '$(document).ready(function() {    $("#errorWrapper").show();    });' + '</script>';
+    locals['error'] = "";
+    locals['js'] = "";
+    if (strError != null && strError != "null")
+    {
+	    strError = '<div id="alert" class="alert alert-error">' + strError + '</div>';
+	    locals['error'] = strError;
+	    locals['js'] += '<script>' + '$(document).ready(function() {    $("#errorWrapper").show();    });' + '</script>';
+	    //FadeError ();
+	}
+}
+
+function FormData (jsonData)
+{
+	locals['formdata'] = jsonData;
 	//FadeError ();
 }
 
@@ -74,9 +85,14 @@ function FadeError ()
 
 function Message (strError)
 {
-	strError = '<div id="alert" class="alert alert-success">' + strError + '</div>';
-	locals['js'] += '<script>' + '$(document).ready(function() {    if ($("#alert").html() != "") $("#errorWrapper").show();    });' + '</script>';
-	locals['error'] = strError;
+    locals['error'] = "";
+    locals['js'] = "";
+    if (strError != null && strError != "null")
+    {
+	    strError = '<div id="alert" class="alert alert-success">' + strError + '</div>';
+	    locals['js'] += '<script>' + '$(document).ready(function() {    if ($("#alert").html() != "") $("#errorWrapper").show();    });' + '</script>';
+	    locals['error'] = strError;
+	}
 }
 
 function UpdateElementVal (id, val)
@@ -100,8 +116,12 @@ function UpdateElementHTML (id, html)
 // </div>
 function Warning (strError)
 {
-	strError = '<div class="alert alert-block"><button type="button" class="close" data-dismiss="alert">&times;</button><h4>Warning!</h4>' + strError + '</div>';
-	locals['error'] = strError;
+    locals['error'] = "";
+    if (strError != null && strError != "null")
+    {
+	    strError = '<div class="alert alert-block"><button type="button" class="close" data-dismiss="alert">&times;</button><h4>Warning!</h4>' + strError + '</div>';
+	    locals['error'] = strError;
+	}
 	FadeError();
 }
 
@@ -170,4 +190,5 @@ module.exports.Message = Message;
 module.exports.Warning = Warning;
 module.exports.cryptPassword = cryptPassword;
 module.exports.comparePassword = comparePassword;
+module.exports.FormData = FormData;
 

@@ -1,0 +1,315 @@
+
+<script>
+  $(document).ready(function () {
+    $('#submit').click(function() {
+      $(this).parents('form:first').submit();
+    });
+    $("#reset").click(function() {
+        $(this).closest('form').find("input[type=text], textarea").val("");
+    });
+
+    $('#btnload').click(function(e) {
+        e.preventDefault();
+        loaddata();
+    });
+
+    $('#btnrandom').click(function(e) {
+        e.preventDefault();
+        randomdata();
+    });
+  })
+
+
+</script>
+
+<script>
+function loaddata () {
+    var header = '<ul class="list-group">';
+    var datatemplate = '<li class="list-group-item">[DATA]</li>';
+    var footer = '</ul>';
+
+    var html = '';
+    $.ajax({
+            type: 'GET',
+            url: '/list/demo/NWCustomer/CreatedDate/Desc',
+            dataType: 'json',
+            cache: false,
+            success: function(result) {
+                for (var i=0; i < result.length; i++)
+                {
+                    var entry = datatemplate.replace('[DATA]',result[i].ContactName);
+                    html += entry;
+                }
+                $("#content").html(header + html + footer);
+            },
+        });
+}
+
+function savedata () {
+    var fields = $( "#NWCustomerform" ).serializeArray();
+        var ret = {};
+        $( "#results" ).empty();
+            jQuery.each( fields, function( i, field ) {
+                ret[field.name] = field.value;
+                //$( "#results" ).append( field.value + " " );
+        });
+
+        $.ajax ({
+            type: "POST",
+            //the url where you want to sent the userName and password to
+            url: '/post/NWCustomer/CustomerID',
+            dataType: 'json',
+            async: false,
+            //json object to sent to the authentication url
+            data: ret,
+            success: function () {
+                alert("Thanks!");
+            }
+        });
+
+}
+
+var id = 1;
+function randomdata () {
+    $("#CustomerID").val(id);
+
+    $("#CompanyName").val(randomEl(adjectives)+' '+randomEl(nouns));
+    $("#ContactName").val(randomEl(adjectives)+' '+randomEl(nouns));
+    $("#ContactTitle").val(randomEl(adjectives));
+    $("#Address").val(randomEl(adjectives)+' '+randomEl(nouns));
+    $("#City").val(randomEl(nouns));
+    $("#Region").val(randomEl(nouns));
+    $("#Country").val(randomEl(nouns));
+    $("#PostalCode").val(randomEl(nouns));
+    $("#Phone").val(randomEl(nouns));
+    $("#Fax").val(randomEl(nouns));
+}
+
+function trigger(){
+    console.log("timer function called " + id);
+    ++id;
+    randomdata();
+    savedata();
+    loaddata();
+}
+
+
+$(function() {
+    //setInterval(trigger, 2000);
+    $( ".datepicker" ).datepicker();
+    $("#CompanyName").focus();
+
+
+    $( "#test" ).click(function(e) {
+        e.preventDefault();
+
+    });
+});
+
+function getFormattedDate(date) {
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear().toString();
+    return year + '' + month + '' + day;
+}
+
+function formatTime(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return strTime;
+}
+
+// START RANDOM NAME GENERATOR
+$('#name').click(function() {
+    $('h2').text(randomEl(adjectives)+' '+randomEl(nouns));
+    selectElementContents($('h2')[0]);
+});
+
+function randomEl(list) {
+    var i = Math.floor(Math.random() * list.length);
+    return list[i];
+}
+
+function selectElementContents(el) {
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+var adjectives = ["adamant", "adroit", "amatory", "animistic", "antic", "arcadian", "baleful", "bellicose", "bilious", "boorish", "calamitous", "caustic", "cerulean", "comely", "concomitant", "contumacious", "corpulent", "crapulous", "defamatory", "didactic", "dilatory", "dowdy", "efficacious", "effulgent", "egregious", "endemic", "equanimous", "execrable", "fastidious", "feckless", "fecund", "friable", "fulsome", "garrulous", "guileless", "gustatory", "heuristic", "histrionic", "hubristic", "incendiary", "insidious", "insolent", "intransigent", "inveterate", "invidious", "irksome", "jejune", "jocular", "judicious", "lachrymose", "limpid", "loquacious", "luminous", "mannered", "mendacious", "meretricious", "minatory", "mordant", "munificent", "nefarious", "noxious", "obtuse", "parsimonious", "pendulous", "pernicious", "pervasive", "petulant", "platitudinous", "precipitate", "propitious", "puckish", "querulous", "quiescent", "rebarbative", "recalcitant", "redolent", "rhadamanthine", "risible", "ruminative", "sagacious", "salubrious", "sartorial", "sclerotic", "serpentine", "spasmodic", "strident", "taciturn", "tenacious", "tremulous", "trenchant", "turbulent", "turgid", "ubiquitous", "uxorious", "verdant", "voluble", "voracious", "wheedling", "withering", "zealous"];
+var nouns = ["ninja", "chair", "pancake", "statue", "unicorn", "rainbows", "laser", "senor", "bunny", "captain", "nibblets", "cupcake", "carrot", "gnomes", "glitter", "potato", "salad", "toejam", "curtains", "beets", "toilet", "exorcism", "stick figures", "mermaid eggs", "sea barnacles", "dragons", "jellybeans", "snakes", "dolls", "bushes", "cookies", "apples", "ice cream", "ukulele", "kazoo", "banjo", "opera singer", "circus", "trampoline", "carousel", "carnival", "locomotive", "hot air balloon", "praying mantis", "animator", "artisan", "artist", "colorist", "inker", "coppersmith", "director", "designer", "flatter", "stylist", "leadman", "limner", "make-up artist", "model", "musician", "penciller", "producer", "scenographer", "set decorator", "silversmith", "teacher", "auto mechanic", "beader", "bobbin boy", "clerk of the chapel", "filling station attendant", "foreman", "maintenance engineering", "mechanic", "miller", "moldmaker", "panel beater", "patternmaker", "plant operator", "plumber", "sawfiler", "shop foreman", "soaper", "stationary engineer", "wheelwright", "woodworkers"];
+
+$('button').click();
+// END RANDOM NAME GENERATOR
+</script>
+
+
+<div id="message2"></div>
+
+<div class="container">
+    <div id="errorWrapper" style="display:none;">
+        <%-error%>
+    </div>
+    <div class="container">
+            <form id="NWCustomerform" class="form-horizontal" method="post" action="/post/NWCustomer/CustomerID|CompanyName">
+                <fieldset class="">
+                    <legend>Customers</legend>
+                    <div class="well primary">
+                        <a class="btn btn-primary btn-lg" href="/list/demo/NWCustomer" alt="API"><i class="glyphicon glyphicon-list"></i></a>
+                        <a class="btn btn-primary btn-lg" href="/demo/NWCustomer/delete/1" alt="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>
+                        <a class="btn btn-primary btn-lg" href="/view/NWCustomer-timeline" alt="Data Timeline"><i class="glyphicon glyphicon-tasks"></i></a>
+                        <a class="btn btn-primary btn-lg" href="/view/NWCustomer-form/-1" alt="Refresh Form"><i class="glyphicon glyphicon-refresh"></i></a>
+
+                        <button style="float:right;" id="btnrandom" class="btn btn-primary align-right">Random Data</button>
+                        <button style="float:right;" id="btnload" class="btn btn-primary align-right">Load Data</button>
+                        &nbsp;&nbsp;
+                        <button style="float:right;" id="test" class="btn btn-primary align-right">Save Data</button>
+                    </div>
+                <div class="well">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="control-label" for="CustomerID">Customer ID</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="CustomerID" name="CustomerID" rel="popover" data-content="Enter your CustomerID." data-original-title="CustomerID">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="control-label" for="CompanyName">Company Name</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="CompanyName" name="CompanyName" rel="popover" data-content="Enter your CompanyName." data-original-title="CompanyName">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="control-label" for="ContactName">Contact Name</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="ContactName" name="ContactName" rel="popover" data-content="Enter your ContactName." data-original-title="ContactName">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="ContactTitle">Contact Title</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="ContactTitle" name="ContactTitle" rel="popover" data-content="Enter your ContactTitle." data-original-title="ContactTitle">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="control-label" for="Address">Address</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Address" name="Address" rel="popover" data-content="Enter your Address." data-original-title="Address">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label" for="City">City</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="City" name="City" rel="popover" data-content="Enter your City." data-original-title="City">
+                        </div>
+                    </div>
+                 </div>
+                 <div class="row">
+                    <div class="col-md-3">
+                        <label class="control-label" for="Region">Region</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Region" name="Region" rel="popover" data-content="Enter your Region." data-original-title="Region">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="PostalCode">Postal Code</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="PostalCode" name="PostalCode" rel="popover" data-content="Enter your PostalCode." data-original-title="PostalCode">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="control-label" for="Country">Country</label>
+                        <div class="controls">
+                            <input type="text" class="input-xlarge form-control" id="Country" name="Country" rel="popover" data-content="Enter your Country." data-original-title="Country">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                        <div class="col-md-3">
+                            <label class="control-label" for="Phone">Phone</label>
+                            <div class="controls">
+                                <input type="text" class="input-xlarge form-control" id="Phone" name="Phone" rel="popover" data-content="Enter your Phone." data-original-title="Phone">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label" for="Fax">Fax</label>
+                            <div class="controls">
+                                <input type="text" class="input-xlarge form-control" id="Fax" name="Fax" rel="popover" data-content="Enter your Fax." data-original-title="Fax">
+                            </div>
+                        </div>
+
+                </div>
+             </div>
+                </fieldset>
+            </form>
+
+
+            <div id="content"></div>
+
+
+
+
+
+
+            </br></br></br>
+
+        <footer class="footer">
+            <p>© 2016 EIS Software, Inc.</p>
+        </footer>
+
+</div> <!-- /container -->
+
+<%-js%>
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <script src="js/plugins/jquery-popover/jquery.cf.popover.min.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/validate.js"></script>
+    
+
+
+      <!-- Add mousewheel plugin (this is optional) -->
+      <!--
+      <script type="text/javascript" src="/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+      -->
+    <!-- Add fancyBox main JS and CSS files -->
+    <script type="text/javascript" src="/js/jquery.browser.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
+    <script type="text/javascript" src="/js/fancybox/jquery.fancybox.js?v=2.1.5"></script>
+  
+    <script type="text/javascript">
+      $(document).ready(function() {   
+        $('.fancybox').fancybox();
+        $(":input").bind('keypress', function(e){
+          var id = $(this).attr('id');
+          console.log(id);
+          var code = (e.keyCode ? e.keyCode : e.which);
+           if(code == 13) { //Enter keycode
+             //Do something
+             console.log('enter key' + id);
+             var form_json = $("form:first").serializeArray();
+             form_json.currentid = id;
+             console.log(form_json);
+           }
+        })
+      });
+    </script>
+
+
+

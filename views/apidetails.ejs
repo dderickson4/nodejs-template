@@ -1,0 +1,71 @@
+
+
+
+<div class="container">
+    <div id="errorWrapper" style="display:none;">
+        <%-error%>
+    </div>
+
+    <div class="table-responsive">
+        <div class="page-header">
+            <h1>Application Programming Interfaces</h1>
+            <p class="lead">Provides the building blocks for your suite of applications.</p>
+        </div>
+
+        <h3>Easier Mobile Application Development.</h3>
+        <p>Get three equal-width columns <strong>starting at desktops and scaling to large desktops</strong>. On mobile devices, tablets and below, the columns will automatically stack.</p>
+        </br></br></br>
+
+        <footer class="footer">
+            <p>© 2016 EIS Software, Inc.</p>
+        </footer>
+
+    </div>
+
+
+
+    </div>
+</div> <!-- /container -->
+
+<%-js%>
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <script src="js/plugins/jquery-popover/jquery.cf.popover.min.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="/js/validate.js"></script>
+    
+
+
+      <!-- Add mousewheel plugin (this is optional) -->
+      <!--
+      <script type="text/javascript" src="/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+      -->
+    <!-- Add fancyBox main JS and CSS files -->
+    <script type="text/javascript" src="/js/jquery.browser.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
+    <script type="text/javascript" src="/js/fancybox/jquery.fancybox.js?v=2.1.5"></script>
+  
+    <script type="text/javascript">
+      $(document).ready(function() {   
+        $('.fancybox').fancybox();
+        $(":input").bind('keypress', function(e){
+          var id = $(this).attr('id');
+          console.log(id);
+          var code = (e.keyCode ? e.keyCode : e.which);
+           if(code == 13) { //Enter keycode
+             //Do something
+             console.log('enter key' + id);
+             var form_json = $("form:first").serializeArray();
+             form_json.currentid = id;
+             console.log(form_json);
+           }
+        })
+      });
+    </script>
+
+
+

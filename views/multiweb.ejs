@@ -100,21 +100,7 @@ socket.on('broadcastmessage', function (data) {
             var type = element.attr('type'); //"input";
             //document.getElementById('' + data.message.formid).type;
 
-/*
-            if (element.attr('type') == "radio")
-            {
-                type = "radio";
-            }
-            if (element.is("checkbox") || element.attr('type') == "checkbox")
-            {
-                type = "checkbox";
-            }
 
-            if (element.is("select"))
-            {
-                type = "select";
-            }
-*/
             console.log("######" + type);
             switch (type)
             {
@@ -173,22 +159,24 @@ $(document).ready(function() {
     });
   });
 
-/*
-  $(":select").each(function() {
-    $(this).change(function() {
-        console.log("select change function called");
-    });
-  });
-*/
-/*
-  $(":select").each(function() {
-    $(this).change(function() {
-        console.log( "Handler for " + $(this).attr("id") + ".change() called." + $(this).is(":checked") );
-        console.log($(this));
-        updateFormElement($(this).attr("id"),$(this).val());
-    });
-  });
-*/
+
+
+$(":select").each(function() {
+    console.log("^^^^^^^^^" + $(this).attr("id"));
+});
+}
+// should find a way to loop through select items instead of setting each one individually.
+$("#selOption1").change(function(){
+    updateFormElement($(this).attr("id"),$(this).val());
+});
+
+$("#selOption2").change(function(){
+    updateFormElement($(this).attr("id"),$(this).val());
+});
+
+
+
+
 
 });
 
@@ -214,35 +202,16 @@ function sendMessageToServer(message) {
 }
 
 
-
-// sendMessageToServer("test message");
-
+$(document).ready(function() {
+    $("#messages").empty();
+    $("#selOption1").val(3);
+    // sendMessageToServer("test message");
+});
 
 </script>
 </head>
 <body>
-<div>
-        <div class="navbar navbar-fixed-top">
-          <div class="navbar-inner">
-            <div class="container">
-              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </a>
-              <a class="brand" href="#"><%= title %></a>
-              <div class="nav-collapse">
-                <ul class="nav">
-                  <li class="active"><a href="#">Home</a></li>
-                  <li><a href="#about">About</a></li>
-                  <li><a href="#contact">Contact</a></li>
-                </ul>
-              </div><!--/.nav-collapse -->
-            </div>
-          </div>
-        </div>
 
-</div>
 
 
 <div class="container">
@@ -255,7 +224,7 @@ function sendMessageToServer(message) {
 
 
 
-    <ul id="messages" style="display:none;">
+    <ul id="messages" style="display:block;">
 
     </ul>
 
@@ -263,7 +232,7 @@ function sendMessageToServer(message) {
 
     <div class="well bs-component" >
         <form class="form-horizontal">
-            <fieldset style="display:none;">
+            <fieldset style="display:block;">
                 <legend>Legend</legend>
                 <div class="form-group">
                     <label for="inputEmail" class="col-lg-2 control-label">Email</label>
@@ -307,22 +276,22 @@ function sendMessageToServer(message) {
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="select" class="col-lg-2 control-label">Selects</label>
+                    <label for="selOption1" class="col-lg-2 control-label">Selects</label>
                     <div class="col-lg-10">
-                        <select class="form-control" id="select">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
+                        <select class="form-control" id="selOption1">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
                         </select>
                         <br>
-                        <select multiple="" class="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
+                        <select id="selOption2" multiple="" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
                         </select>
                     </div>
                 </div>
